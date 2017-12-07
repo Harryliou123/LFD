@@ -1,0 +1,74 @@
+# History files
+.Rhistory
+.Rapp.history
+---
+title: "LFD"
+author: "103304029 Harry Liou"
+output: html_document
+---
+```{r echo=FALSE}
+library(magrittr)
+```
+## the roc curve and auc of original data(without logit transform)
+```{r}
+d1 = rnorm(500, -1, 1)
+d2 = rnorm(10000, 1, 1) 
+d3 = c(d1,d2) %>% sort()
+```
+```{r echo=FALSE}
+tpf=c();fpf=c()
+for(n in 1:length(d3)){
+  c=d3[n]
+  a1=mean(1*(d1<c))
+  a2=mean(1*(d2<c))
+  tpf=c(tpf,a1)
+  fpf=c(fpf,a2)
+}
+
+par(mfrow=c(1,2))
+
+plot(fpf,tpf,xlab = "fpf",ylab = "tpf",main = "ROC Curve of original data",type="l")
+
+auc=0
+for(n in 1:(length(tpf)-1)){
+  a=(tpf[n+1])*(fpf[n+1]-fpf[n])
+  auc = auc + a
+}
+paste("auc = ", auc) 
+```
+
+***
+
+## the roc curve and auc of logit model
+
+ $\pi(x)=\frac{e^x}{1+e^x}$
+```{r}
+#logit transform
+
+for(i in 1:length(d1)){
+  d1[i] = 1/((1/exp(d1[i]))+1)}
+for(i in 1:length(d2)){
+  d2[i] = 1/((1/exp(d2[i]))+1)}
+for(i in 1:length(d3)){
+  d3[i] = 1/((1/exp(d3[i]))+1)}
+```
+```{r echo=FALSE}
+tpf=c();fpf=c()
+for(n in 1:length(d3)){
+  c=d3[n]
+  a1=mean(1*(d1<c))
+  a2=mean(1*(d2<c))
+  tpf=c(tpf,a1)
+  fpf=c(fpf,a2)
+}
+
+par(mfrow=c(1,2))
+plot(fpf,tpf,xlab = "fpf",ylab = "tpf",main = "ROC Curve of logit modelf",type="l")
+
+auc=0
+for(n in 1:(length(tpf)-1)){
+  a=(tpf[n+1])*(fpf[n+1]-fpf[n])
+  auc = auc + a
+}
+paste("auc = ", auc) 
+```
